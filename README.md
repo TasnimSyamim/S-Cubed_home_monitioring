@@ -1,1 +1,1 @@
-# thief_detector_system
+# S-Cubed ( Security Surveillance System)
