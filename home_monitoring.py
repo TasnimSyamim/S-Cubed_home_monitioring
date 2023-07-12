@@ -3,6 +3,7 @@ import mediapipe as mp
 import cv2
 import numpy as np
 import pandas as pd
+import requests
 
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.preprocessing.image import img_to_array
@@ -87,6 +88,9 @@ def detect_and_predict_mask(frame, faceNet, maskNet):
     return (locs, preds)
 
 
+human = ""
+sus_counter = 0
+
 # Initialize video stream
 vs = VideoStream(src=0).start()
 time.sleep(2.0)
@@ -122,6 +126,7 @@ with mp_holistic.Holistic(
             # Determine the class label and color for mask detection
             label = "Mask" if mask > withoutMask else "No Mask"
             color = (0, 255, 0) if label == "Mask" else (0, 0, 255)
+            human = label
             
             # Include the probability in the label
             label = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
@@ -158,7 +163,22 @@ with mp_holistic.Holistic(
             
         except:
             pass
-        
+
+
+        if(body_language_class == "open_door" and human == "Mask"):
+            print("THIEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+            sus_counter += 1
+            
+        if(sus_counter == 50):
+            print("SAVEEEEEEEEEEEEEEEE")
+            frame_filename = f"thief.jpg"
+            cv2.imwrite(frame_filename, frame)
+            with open('thief.jpg', 'rb') as image_file:
+                files = {'photo': image_file,
+                        'caption': "abdnormal activities!!! call 911 omg"}
+                response = requests.post('https://scubed-telebot-aa8bc18176d7.herokuapp.com/notify', files=files)
+
+            
         # Display the resulting image
         cv2.imshow("Frame", image)
         key = cv2.waitKey(1) & 0xFF
