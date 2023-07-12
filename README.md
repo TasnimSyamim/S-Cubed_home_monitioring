@@ -1,1 +1,1 @@
-# S-Cubed ( Security Surveillance System)
+# S-Cubed (Security Surveillance System)
